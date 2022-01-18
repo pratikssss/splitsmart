@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "331897823430",
+    "project_id": "splitsmart-12db0",
+    "storage_bucket": "splitsmart-12db0.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:331897823430:android:2ecd0997e8a57b578637c7",
+        "android_client_info": {
+          "package_name": "com.example.splitsmart"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "331897823430-6fut3rnhgcnilm7i059sj0n9hpt4mdb3.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBXYn-V0mGMqhOoBjpbQvwlwFPtYEXyFy4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "331897823430-6fut3rnhgcnilm7i059sj0n9hpt4mdb3.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
