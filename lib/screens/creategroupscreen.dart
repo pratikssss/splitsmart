@@ -18,8 +18,9 @@ class creategroupscreen extends StatefulWidget {
 class _creategroupscreenState extends State<creategroupscreen> {
   final _auth = FirebaseAuth.instance;
   late String grpname;
-  final CollectionReference userlist =
-      FirebaseFirestore.instance.collection('users');
+  final CollectionReference grouplist =
+      FirebaseFirestore.instance.collection('group');
+
   // ignore: deprecated_member_use
   List<String> members = [];
   final messagetextcontroller = TextEditingController();
@@ -43,15 +44,15 @@ class _creategroupscreenState extends State<creategroupscreen> {
   }
 
   Future updateuserdata(String uid, List aa) async {
-    return await userlist.doc(uid).update({'members': aa});
+    return await grouplist.doc(uid).update({'members': aa});
   }
 
-  Future getuserlist() async {
+  Future getuserlist(String d) async {
     List itemlist = [];
     List ids = [];
     try {
       int c = 0;
-      await userlist.get().then((QuerySnapshot) {
+      await grouplist.get().then((QuerySnapshot) {
         QuerySnapshot.docs.forEach((element) {
           ids.add(element.id);
           itemlist.add(element.data());
@@ -60,10 +61,9 @@ class _creategroupscreenState extends State<creategroupscreen> {
         });
       });
       for (var i = 0; i < c; i++) {
-        if (itemlist[i]['groupname'] == 'xxx') {
+        if (itemlist[i]['groupname'] == grpname) {
           List aa = itemlist[i]['members'];
-          aa.add('pratik');
-          aa.add('mahajan');
+          aa.add(d);
           for (var j = 0; j < aa.length; j++) print(aa[j]);
           String uid = ids[i];
           updateuserdata(uid, aa);
@@ -102,17 +102,17 @@ class _creategroupscreenState extends State<creategroupscreen> {
                 //  messagetextcontroller.clear();
                 //Implement send functionality.
                 messagetextcontroller.clear();
-                getuserlist();
+
                 //Implement send functionality.
                 //   members.add(loggedinuser!.uid.toString());
-                _firestore.collection('users').add({
+                _firestore.collection('group').add({
                   'groupname': grpname,
                   'leader': loggedinuser!.uid,
                   'ttime': DateTime.now(),
-                  'members': ['abc'],
+                  'members': [],
                   //            'messageTime': DateTime.now(),
                 });
-
+                getuserlist(loggedinuser!.email.toString());
                 //     updateuserdata('donnn', "uKZbyPaSVd819mb17IFP");
               },
               child: Text(
@@ -143,7 +143,7 @@ class grpstream extends StatelessWidget {
   Widget build(BuildContext context) {
     return StreamBuilder<QuerySnapshot>(
         stream: _firestore
-            .collection('users')
+            .collection('group')
             .orderBy('ttime', descending: true)
             .snapshots(),
         builder: (context, snapshot) {
@@ -160,7 +160,17 @@ class grpstream extends StatelessWidget {
             final pp = i.get('groupname');
             final qq = i.get('leader');
             final hh = grpbubble(pp, qq);
-            grps.add(hh);
+            String loggedinmail = loggedinuser!.email.toString();
+            List ls = i.get('members');
+            int c = 0;
+            for (int j = 0; j < ls.length; j++) {
+              if (ls[j] == loggedinmail) {
+                c = 1;
+                break;
+              }
+            }
+            if (hh == loggedinmail) c = 1;
+            if (c == 1) grps.add(hh);
             //grps.reversed;
           }
           return Expanded(

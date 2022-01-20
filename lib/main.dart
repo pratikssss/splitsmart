@@ -1,5 +1,6 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:splitsmart/navi.dart';
 import 'package:splitsmart/screens/accountscreen.dart';
 import 'package:splitsmart/others/cbutton.dart';
@@ -7,12 +8,14 @@ import 'package:splitsmart/screens/creategroupscreen.dart';
 import 'package:splitsmart/screens/friendscreen.dart';
 import 'package:splitsmart/screens/groups_screen.dart';
 import 'package:splitsmart/loginpages/loginpage.dart';
+import 'package:splitsmart/screens/joingroup.dart';
 import 'package:splitsmart/screens/welcome_screen.dart';
 
-void main() async {
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
-  runApp(const MyApp());
+  //runApp(const MyApp());
+  runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
@@ -28,6 +31,7 @@ class MyApp extends StatelessWidget {
       ),
       initialRoute: welcomescreen.id,
       routes: {
+        joingroup.id: (context) => joingroup(),
         loginpage.id: (context) => loginpage(),
         welcomescreen.id: (context) => welcomescreen(),
         accountscreen.id: (context) => accountscreen(),

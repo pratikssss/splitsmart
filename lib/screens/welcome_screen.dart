@@ -9,9 +9,14 @@ import 'package:splitsmart/loginpages/signinpage.dart';
 
 import '../others/cbutton.dart';
 
-class welcomescreen extends StatelessWidget {
+class welcomescreen extends StatefulWidget {
   static const String id = 'welcome_screen';
 
+  @override
+  State<welcomescreen> createState() => _welcomescreenState();
+}
+
+class _welcomescreenState extends State<welcomescreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
