@@ -111,6 +111,7 @@ class _creategroupscreenState extends State<creategroupscreen> {
                   'leader': loggedinuser!.uid,
                   'ttime': DateTime.now(),
                   'members': [],
+                  'amount': [],
                   //            'messageTime': DateTime.now(),
                 });
                 getuserlist(loggedinuser!.email.toString());

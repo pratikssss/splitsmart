@@ -35,6 +35,10 @@ class _joingroupState extends State<joingroup> {
     return await grouplist.doc(uid).update({'members': aa});
   }
 
+  Future updateuserdata1(String uid, List aa) async {
+    return await grouplist.doc(uid).update({'amount': aa});
+  }
+
   void getcurrentuser() async {
     try {
       final user = await _auth.currentUser;
@@ -51,7 +55,9 @@ class _joingroupState extends State<joingroup> {
     List itemlist = [];
     List ids = [];
     try {
+      String k = '';
       int c = 0;
+      List ab = [];
       await grouplist.get().then((QuerySnapshot) {
         QuerySnapshot.docs.forEach((element) {
           ids.add(element.id);
@@ -59,15 +65,28 @@ class _joingroupState extends State<joingroup> {
           c++;
         });
       });
+      List mm = [];
       for (var i = 0; i < c; i++) {
         if (ids[i] == gid) {
           List aa = itemlist[i]['members'];
+          List pq = itemlist[i]['amount'];
           aa.add(d);
           //for (var j = 0; j < aa.length; j++) print(aa[j]);
           String uid = ids[i];
+          k = uid;
           updateuserdata(uid, aa);
+          for (int j = 0; j < aa.length; j++) {
+            if (aa[j] != d) {
+              String df = d + ' ' + aa[j] + ' ' + '0';
+              pq.add(df);
+              String fd = aa[j] + ' ' + d + ' ' + '0';
+              pq.add(fd);
+            }
+          }
+          mm = pq;
         }
       }
+      updateuserdata1(k, mm);
     } catch (e) {
       print(e);
     }
