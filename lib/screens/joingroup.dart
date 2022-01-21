@@ -57,7 +57,6 @@ class _joingroupState extends State<joingroup> {
           ids.add(element.id);
           itemlist.add(element.data());
           c++;
-          final x = element.data();
         });
       });
       for (var i = 0; i < c; i++) {

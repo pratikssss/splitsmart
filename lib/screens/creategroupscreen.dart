@@ -4,6 +4,7 @@ import 'package:splitsmart/others/constants.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:splitsmart/screens/groups_screen.dart';
+import 'package:splitsmart/screens/showmembers.dart';
 
 final _firestore = FirebaseFirestore.instance;
 User? loggedinuser;
@@ -57,7 +58,7 @@ class _creategroupscreenState extends State<creategroupscreen> {
           ids.add(element.id);
           itemlist.add(element.data());
           c++;
-          final x = element.data();
+          // final x = element.data();
         });
       });
       for (var i = 0; i < c; i++) {
@@ -159,7 +160,9 @@ class grpstream extends StatelessWidget {
           for (var i in x) {
             final pp = i.get('groupname');
             final qq = i.get('leader');
-            final hh = grpbubble(pp, qq);
+            final abc = i.id;
+            print(abc);
+            final hh = grpbubble(pp, qq, abc);
             String loggedinmail = loggedinuser!.email.toString();
             List ls = i.get('members');
             int c = 0;
@@ -187,7 +190,9 @@ class grpstream extends StatelessWidget {
 class grpbubble extends StatelessWidget {
   late String a;
   late String b;
-  grpbubble(this.a, this.b);
+  late String iid;
+  grpbubble(this.a, this.b, this.iid);
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -201,11 +206,16 @@ class grpbubble extends StatelessWidget {
           color: Colors.green.shade300,
           child: Padding(
             padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-            child: Text(
-              'group name -> $a , LeaderID -> $b',
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 15,
+            child: TextButton(
+              onPressed: () {
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (BuildContext context) {
+                  return showmembers(iid);
+                }));
+              },
+              child: Text(
+                a,
+                style: TextStyle(color: Colors.black38),
               ),
             ),
           ),
