@@ -10,18 +10,137 @@ List ab = [];
 class moneydist extends StatefulWidget {
   static const String id = 'moneydist';
   String iid;
-  moneydist(this.iid);
+  String ans;
+  moneydist(this.iid, this.ans);
   @override
-  _moneydistState createState() => _moneydistState(this.iid);
+  _moneydistState createState() => _moneydistState(this.iid, this.ans);
 }
 
 class _moneydistState extends State<moneydist> {
-  _moneydistState(this.iid);
+  _moneydistState(this.iid, this.ans);
   final _auth = FirebaseAuth.instance;
   late String grpname;
+  String ans;
   final CollectionReference grouplist =
       FirebaseFirestore.instance.collection('group');
   String iid;
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    getcurrentuser();
+  }
+
+  Future updateuserdata(String uid, List aa) async {
+    return await grouplist.doc(uid).update({'members': aa});
+  }
+
+  Future updateuserdata1(String uid, List aa) async {
+    return await grouplist.doc(uid).update({'amount': aa});
+  }
+
+  Future getuserlist(double x, String d, String iid) async {
+    List itemlist = [];
+    List ids = [];
+    try {
+      int c = 0;
+      await grouplist.get().then((QuerySnapshot) {
+        QuerySnapshot.docs.forEach((element) {
+          ids.add(element.id);
+          itemlist.add(element.data());
+          c++;
+          // final x = element.data();
+        });
+      });
+      for (var i = 0; i < c; i++) {
+        if (ids[i] == iid) {
+          print(iid);
+          List bb = itemlist[i]['amount'];
+          // for (int i = 0; i < bb.length; i++) print(bb[i]);
+          for (int j = 0; j < bb.length; j++) {
+            //List mm = [];
+            String p = bb[j];
+            String maily = '';
+            String opponent = '';
+            int c = 0;
+            int h;
+            int k;
+            for (k = 0; k < p.length; k++) {
+              if (p[k] == ' ') {
+                c = 1;
+                k++;
+                // h=k+1;
+                break;
+              }
+              if (c == 0) {
+                maily += p[k];
+              }
+            }
+            for (h = k; h < p.length; h++) {
+              if (p[h] == ' ') {
+                break;
+              }
+              opponent += p[h];
+            }
+            //       print(maily + d);
+            if (maily == d) {
+              String dd = '';
+              for (int k = p.length - 1; k >= 0; k--) {
+                if (p[k] == ' ') {
+                  break;
+                }
+                dd += p[k];
+              }
+              String amtt = '';
+              for (int k = dd.length - 1; k >= 0; k--) {
+                amtt += dd[k];
+              }
+              double pk = double.parse(amtt);
+              pk += x;
+              String kp = pk.toString();
+              String pop = '';
+              pop += maily + ' ' + opponent + ' ' + kp;
+              bb[j] = pop;
+            } else if (opponent == d) {
+              String dd = '';
+              for (int k = p.length - 1; k >= 0; k--) {
+                if (p[k] == ' ') {
+                  break;
+                }
+                dd += p[k];
+              }
+              String amtt = '';
+              for (int k = dd.length - 1; k >= 0; k--) {
+                amtt += dd[k];
+              }
+              double pk = double.parse(amtt);
+              pk = pk - x;
+              String kp = pk.toString();
+              String pop = '';
+              pop += maily + ' ' + opponent + ' ' + kp;
+              bb[j] = pop;
+            }
+          }
+          updateuserdata1(iid, bb);
+        }
+      }
+    } catch (e) {
+      print(e);
+    }
+  }
+
+  void getcurrentuser() async {
+    try {
+      final user = await _auth.currentUser;
+      if (user != null) loggedinuser = user;
+    } catch (e) {
+      print(e);
+    }
+
+    ///   print(loggedinuser!.email);
+//    print(loggedinuser!.phoneNumber);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -34,7 +153,15 @@ class _moneydistState extends State<moneydist> {
           namestream1(iid),
           TextButton(
             onPressed: () {
+              double x = double.parse(ans);
+              print(x);
               for (int j = 0; j < ab.length; j++) print(ab[j]);
+              int len = ab.length;
+              x = x / len;
+              print(x);
+              ab.clear();
+              getuserlist(x, loggedinuser!.email.toString(), iid);
+              Navigator.pop(context);
             },
             child: Text('Lesssgooo'),
           ),

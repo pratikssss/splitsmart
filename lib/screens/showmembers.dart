@@ -68,7 +68,7 @@ class _showmembersState extends State<showmembers> {
             onPressed: () {
               Navigator.push(context,
                   MaterialPageRoute(builder: (BuildContext context) {
-                return moneydist(iid);
+                return moneydist(iid, ans);
               }));
             },
             child: Text('Split with few members'),
@@ -186,7 +186,7 @@ class namestream extends StatelessWidget {
                     amtt += dd[k];
                   }
 
-                  var amounts = int.parse(amtt);
+                  double amounts = double.parse(amtt);
                   if (amounts == 0) {
                     String s = '';
                     s += 'You are all settled up with $opponent ';
@@ -199,7 +199,9 @@ class namestream extends StatelessWidget {
                     names.add(hh);
                   } else {
                     String s = '';
-                    s += 'You owe $opponent  $amtt Rs';
+                    String abc = '';
+                    for (int h = 1; h < amtt.length; h++) abc += amtt[h];
+                    s += 'You owe $opponent  $abc Rs';
                     final hh = namebubble(s);
                     names.add(hh);
                   }
