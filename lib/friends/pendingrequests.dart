@@ -1,32 +1,35 @@
+import 'package:flutter/cupertino.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:splitsmart/friends/pendingrequests.dart';
-import 'package:splitsmart/friends/sendfriendreq.dart';
 import 'package:splitsmart/others/constants.dart';
 import 'package:splitsmart/others/reusable.dart';
+import 'package:splitsmart/screens/friendscreen.dart';
 import 'package:splitsmart/screens/showmembers.dart';
 import 'package:splitsmart/screens/welcome_screen.dart';
-import 'accountscreen.dart';
-import 'groups_screen.dart';
 
 final _firestore = FirebaseFirestore.instance;
 User? loggedinuser;
-String? iiid;
 
-class friendscreen extends StatefulWidget {
-  static const String id = 'friendscreen';
-
+class pendingrequest extends StatefulWidget {
+  static const String id = 'preq';
+  String iiid;
+  pendingrequest(this.iiid);
   @override
-  State<friendscreen> createState() => _friendscreenState();
+  _pendingrequestState createState() => _pendingrequestState(this.iiid);
 }
 
-class _friendscreenState extends State<friendscreen> {
+final CollectionReference friendlist =
+    FirebaseFirestore.instance.collection('friendz');
+
+class _pendingrequestState extends State<pendingrequest> {
   final _auth = FirebaseAuth.instance;
   late String grpname;
   late String membername;
-  final CollectionReference frienlist =
-      FirebaseFirestore.instance.collection('friendz');
+  String iiid;
+  _pendingrequestState(this.iiid);
+
   @override
   void initState() {
     // TODO: implement initState
@@ -67,45 +70,19 @@ class _friendscreenState extends State<friendscreen> {
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: _onBackPressed,
-      child: Scaffold(
-          appBar: AppBar(
-            title: Text('SplitSmart'),
-          ),
-          body: Column(
-            children: [
-              Text(
-                "Your Friends",
-                style: DefaultTextStyle.of(context)
-                    .style
-                    .apply(fontSizeFactor: 2.0),
-              ),
-              Expanded(child: friendstream()),
-              TextButton(
-                onPressed: () {
-                  Navigator.push(context,
-                      MaterialPageRoute(builder: (BuildContext context) {
-                    return pendingrequest(iiid!);
-                  }));
-                },
-                child: Text(
-                  'See Pending Requests!',
-                  style: TextStyle(height: 3, fontSize: 20),
-                ),
-              ),
-              TextButton(
-                onPressed: () {
-                  Navigator.pushNamed(context, sendfriendrequest.id);
-                },
-                child: Text(
-                  'Send Friend Request',
-                  style: TextStyle(height: 3, fontSize: 20),
-                ),
-              ),
-            ],
-          )),
-    );
+    return Scaffold(
+        appBar: AppBar(
+          title: Text('SplitSmart'),
+        ),
+        body: Column(
+          children: [
+            Text(
+              "Pending ",
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            ),
+            Expanded(child: friendstream()),
+          ],
+        ));
   }
 }
 
@@ -129,14 +106,12 @@ class friendstream extends StatelessWidget {
           final x = snapshot.data!.docs;
           for (var i in x) {
             final pp = i.get('owner');
-
             print(pp);
             //final qq = i.get('leader');
             if (pp == loggedinuser!.email.toString()) {
               final abc = i.id;
-              iiid = abc;
               // print(abc);
-              List ls = i.get('friends');
+              List ls = i.get('pendingreq');
               int dd = ls.length;
               for (int j = 0; j < ls.length; j++) {
                 final hh = grpbubble(ls[j]);
@@ -158,12 +133,39 @@ class friendstream extends StatelessWidget {
   }
 }
 
+Future updateuserdata1(String uid, List aa) async {
+  return await friendlist.doc(uid).update({'pendingreq': aa});
+}
+
+Future updateuserdata(String uid, List aa) async {
+  return await friendlist.doc(uid).update({'friends': aa});
+}
+
+Future func(String a) async {
+  final gval =
+      await FirebaseFirestore.instance.collection('friendz').doc(iiid).get();
+  List aa = gval.get('friends');
+  aa.add(a);
+  updateuserdata(iiid!, aa);
+  List bb = gval.get('pendingreq');
+  bb.remove(a);
+  updateuserdata1(iiid!, bb);
+}
+
+Future func1(String a) async {
+  final gval =
+      await FirebaseFirestore.instance.collection('friendz').doc(iiid).get();
+
+  List bb = gval.get('pendingreq');
+  bb.remove(a);
+  updateuserdata1(iiid!, bb);
+}
+
 class grpbubble extends StatelessWidget {
   late String a;
   late String b;
   late String iid;
   late int len;
-  late String iiid;
   grpbubble(this.a);
 
   @override
@@ -185,6 +187,47 @@ class grpbubble extends StatelessWidget {
                 //   MaterialPageRoute(builder: (BuildContext context) {
                 // return showmembers(iid, len);
                 // }));
+
+                showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return Scaffold(
+                        backgroundColor: Colors.transparent,
+                        body: SafeArea(
+                            child: Expanded(
+                          child: Center(
+                            child: Column(
+                              children: [
+                                TextButton(
+                                  onPressed: () {
+                                    func(a);
+                                    Navigator.pop(context);
+                                  },
+                                  child: Text(
+                                    'Add Friend',
+                                    style: TextStyle(
+                                        fontSize: 20,
+                                        fontWeight: FontWeight.w300),
+                                  ),
+                                ),
+                                TextButton(
+                                  onPressed: () {
+                                    func1(a);
+                                    Navigator.pop(context);
+                                  },
+                                  child: Text(
+                                    'Remove Requests',
+                                    style: TextStyle(
+                                        fontSize: 20,
+                                        fontWeight: FontWeight.w300),
+                                  ),
+                                )
+                              ],
+                            ),
+                          ),
+                        )));
+                  },
+                );
               },
               child: Text(
                 a,

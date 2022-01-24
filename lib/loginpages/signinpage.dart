@@ -1,9 +1,13 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 import 'package:splitsmart/others/constants.dart';
 import 'package:splitsmart/loginpages/loginpage.dart';
 import 'package:splitsmart/others/roundedbutton.dart';
+
+final _firestore = FirebaseFirestore.instance;
+User? loggedinuser;
 
 class signinpage extends StatefulWidget {
   static const String id = 'siginin';
@@ -73,8 +77,16 @@ class _signinpageState extends State<signinpage> {
                 try {
                   final newuser = await _auth.createUserWithEmailAndPassword(
                       email: email, password: password);
-                  if (newuser != null)
+                  if (newuser != null) {
+                    _firestore.collection('friendz').add({
+                      'owner': email,
+                      'friends': [],
+                      'pendingreq': [],
+                      'ttime': DateTime.now(),
+                      //            'messageTime': DateTime.now(),
+                    });
                     Navigator.pushNamed(context, loginpage.id);
+                  }
                 } catch (e) {
                   print(e);
                 }

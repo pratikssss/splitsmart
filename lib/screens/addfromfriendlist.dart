@@ -1,0 +1,177 @@
+import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+import 'package:splitsmart/friends/pendingrequests.dart';
+import 'package:splitsmart/screens/addfromfriendlist.dart';
+import 'package:splitsmart/screens/showmembers.dart';
+
+final _firestore = FirebaseFirestore.instance;
+User? loggedinuser;
+List ab = [];
+final _auth = FirebaseAuth.instance;
+late String grpname;
+final CollectionReference friendlist =
+    FirebaseFirestore.instance.collection('friendz');
+final CollectionReference grouplist =
+    FirebaseFirestore.instance.collection('group');
+
+class addfromfriendlist extends StatefulWidget {
+  static const String id = 'addfrom';
+  String iid;
+  String owid;
+  addfromfriendlist(this.iid, this.owid);
+  @override
+  _addfromfriendlistState createState() =>
+      _addfromfriendlistState(this.iid, this.owid);
+}
+
+class _addfromfriendlistState extends State<addfromfriendlist> {
+  _addfromfriendlistState(this.iid, this.owid);
+  String iid;
+  String owid;
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    getcurrentuser();
+  }
+
+  void getcurrentuser() async {
+    try {
+      final user = await _auth.currentUser;
+      if (user != null) loggedinuser = user;
+    } catch (e) {
+      print(e);
+    }
+  }
+
+  Future updateuserdata12(String uid, List aa) async {
+    return await grouplist.doc(uid).update({'members': aa});
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Splitsmart'),
+      ),
+      body: SafeArea(
+          child: Column(
+        children: [
+          namestream1(owid),
+          TextButton(
+            onPressed: () async {
+              final gval = await FirebaseFirestore.instance
+                  .collection('group')
+                  .doc(iid)
+                  .get();
+              List aa = gval.get('members');
+              for (int i = 0; i < ab.length; i++) aa.add(ab[i]);
+
+              updateuserdata12(iid, aa);
+
+              ab.clear();
+
+              Navigator.pop(context);
+            },
+            child: Text('Add'),
+          ),
+        ],
+      )),
+    );
+  }
+}
+
+class namestream1 extends StatelessWidget {
+  String? iid;
+  namestream1(this.iid);
+  @override
+  Widget build(BuildContext context) {
+    return StreamBuilder<QuerySnapshot>(
+        stream: _firestore
+            .collection('friendz')
+            .orderBy('ttime', descending: true)
+            .snapshots(),
+        builder: (context, snapshot) {
+          List<namebubble> names = [];
+          if (!snapshot.hasData) {
+            return Center(
+              child: CircularProgressIndicator(
+                backgroundColor: Colors.lightBlueAccent,
+              ),
+            );
+          }
+          final x = snapshot.data!.docs;
+          for (var i in x) {
+            final abc = i.id;
+            if (owid == abc) {
+              final pp = i.get('friends');
+              for (int j = 0; j < pp.length; j++) {
+                final hh = namebubble(pp[j]);
+                names.add(hh);
+              }
+              //grps.reversed;
+            }
+          }
+          return Expanded(
+            child: ListView(
+              reverse: true,
+              padding: EdgeInsets.symmetric(horizontal: 10, vertical: 20),
+              children: names,
+            ),
+          );
+        });
+  }
+}
+
+class namebubble extends StatefulWidget {
+  late String pp;
+  namebubble(this.pp);
+
+  @override
+  State<namebubble> createState() => _namebubbleState(this.pp);
+}
+
+class _namebubbleState extends State<namebubble> {
+  bool c = false;
+  String pp;
+  _namebubbleState(this.pp);
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        Material(
+          //    borderRadius: BorderRadius.only(
+          //      topRight: Radius.circular(30),
+          //    bottomLeft: Radius.circular(30),
+          //   bottomRight: Radius.circular(30)),
+          elevation: 5,
+          color: c ? Colors.green.shade400 : Colors.white,
+          //color: c ? Colors.lightBlueAccent : Colors.white,
+          child: Padding(
+            padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+            child: TextButton(
+              onPressed: () {
+                setState(() {
+                  if (c == false) {
+                    c = true;
+                    ab.add(pp);
+                  } else {
+                    c = false;
+                    ab.remove(pp);
+                  }
+                });
+              },
+              child: Text(
+                widget.pp,
+                style: TextStyle(color: Colors.black38),
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}

@@ -2,10 +2,12 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:splitsmart/screens/addfromfriendlist.dart';
 
 final _firestore = FirebaseFirestore.instance;
 User? loggedinuser;
 List ab = [];
+String? fid;
 
 class moneydist extends StatefulWidget {
   static const String id = 'moneydist';
@@ -21,6 +23,7 @@ class _moneydistState extends State<moneydist> {
   final _auth = FirebaseAuth.instance;
   late String grpname;
   String ans;
+  var mp = {};
   final CollectionReference grouplist =
       FirebaseFirestore.instance.collection('group');
   String iid;
@@ -39,7 +42,7 @@ class _moneydistState extends State<moneydist> {
     return await grouplist.doc(uid).update({'amount': aa});
   }
 
-  Future getuserlist(double x, String d, String iid) async {
+  Future getuserlist(double x, String d, String iid, Map mp) async {
     List itemlist = [];
     List ids = [];
     try {
@@ -54,7 +57,7 @@ class _moneydistState extends State<moneydist> {
       });
       for (var i = 0; i < c; i++) {
         if (ids[i] == iid) {
-          print(iid);
+//          print(iid);
           List bb = itemlist[i]['amount'];
           // for (int i = 0; i < bb.length; i++) print(bb[i]);
           for (int j = 0; j < bb.length; j++) {
@@ -84,44 +87,50 @@ class _moneydistState extends State<moneydist> {
             }
             //       print(maily + d);
             if (maily == d) {
-              String dd = '';
-              for (int k = p.length - 1; k >= 0; k--) {
-                if (p[k] == ' ') {
-                  break;
+              if (mp.containsKey(opponent)) {
+                String dd = '';
+                for (int k = p.length - 1; k >= 0; k--) {
+                  if (p[k] == ' ') {
+                    break;
+                  }
+                  dd += p[k];
                 }
-                dd += p[k];
+                String amtt = '';
+                for (int k = dd.length - 1; k >= 0; k--) {
+                  amtt += dd[k];
+                }
+                double pk = double.parse(amtt);
+                pk += x;
+                String kp = pk.toString();
+                String pop = '';
+                pop += maily + ' ' + opponent + ' ' + kp;
+                bb[j] = pop;
               }
-              String amtt = '';
-              for (int k = dd.length - 1; k >= 0; k--) {
-                amtt += dd[k];
-              }
-              double pk = double.parse(amtt);
-              pk += x;
-              String kp = pk.toString();
-              String pop = '';
-              pop += maily + ' ' + opponent + ' ' + kp;
-              bb[j] = pop;
             } else if (opponent == d) {
-              String dd = '';
-              for (int k = p.length - 1; k >= 0; k--) {
-                if (p[k] == ' ') {
-                  break;
+              if (mp.containsKey(maily)) {
+                String dd = '';
+                for (int k = p.length - 1; k >= 0; k--) {
+                  if (p[k] == ' ') {
+                    break;
+                  }
+                  dd += p[k];
                 }
-                dd += p[k];
+                String amtt = '';
+                for (int k = dd.length - 1; k >= 0; k--) {
+                  amtt += dd[k];
+                }
+                double pk = double.parse(amtt);
+                pk = pk - x;
+                String kp = pk.toString();
+                String pop = '';
+                pop += maily + ' ' + opponent + ' ' + kp;
+                bb[j] = pop;
               }
-              String amtt = '';
-              for (int k = dd.length - 1; k >= 0; k--) {
-                amtt += dd[k];
-              }
-              double pk = double.parse(amtt);
-              pk = pk - x;
-              String kp = pk.toString();
-              String pop = '';
-              pop += maily + ' ' + opponent + ' ' + kp;
-              bb[j] = pop;
             }
           }
           updateuserdata1(iid, bb);
+          print(mp);
+          mp.clear();
         }
       }
     } catch (e) {
@@ -136,9 +145,6 @@ class _moneydistState extends State<moneydist> {
     } catch (e) {
       print(e);
     }
-
-    ///   print(loggedinuser!.email);
-//    print(loggedinuser!.phoneNumber);
   }
 
   @override
@@ -159,12 +165,15 @@ class _moneydistState extends State<moneydist> {
               int len = ab.length;
               x = x / len;
               print(x);
+              for (int i = 0; i < ab.length; i++) mp[ab[i]] = 1;
               ab.clear();
-              getuserlist(x, loggedinuser!.email.toString(), iid);
+              //  mp.clear();
+              getuserlist(x, loggedinuser!.email.toString(), iid, mp);
               Navigator.pop(context);
             },
             child: Text('Lesssgooo'),
           ),
+          SizedBox(height: 30),
         ],
       )),
     );

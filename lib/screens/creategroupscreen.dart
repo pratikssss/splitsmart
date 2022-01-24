@@ -162,10 +162,12 @@ class grpstream extends StatelessWidget {
             final pp = i.get('groupname');
             final qq = i.get('leader');
             final abc = i.id;
-            print(abc);
-            final hh = grpbubble(pp, qq, abc);
-            String loggedinmail = loggedinuser!.email.toString();
+            // print(abc);
             List ls = i.get('members');
+            int dd = ls.length;
+            final hh = grpbubble(pp, qq, abc, dd);
+            String loggedinmail = loggedinuser!.email.toString();
+
             int c = 0;
             for (int j = 0; j < ls.length; j++) {
               if (ls[j] == loggedinmail) {
@@ -192,7 +194,8 @@ class grpbubble extends StatelessWidget {
   late String a;
   late String b;
   late String iid;
-  grpbubble(this.a, this.b, this.iid);
+  int len;
+  grpbubble(this.a, this.b, this.iid, this.len);
 
   @override
   Widget build(BuildContext context) {
@@ -211,7 +214,7 @@ class grpbubble extends StatelessWidget {
               onPressed: () {
                 Navigator.push(context,
                     MaterialPageRoute(builder: (BuildContext context) {
-                  return showmembers(iid);
+                  return showmembers(iid, len);
                 }));
               },
               child: Text(

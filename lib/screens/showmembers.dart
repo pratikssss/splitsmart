@@ -3,17 +3,21 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:splitsmart/others/constants.dart';
 import 'package:splitsmart/others/roundedbutton.dart';
+import 'package:splitsmart/screens/addfromfriendlist.dart';
 import 'package:splitsmart/screens/moneydist.dart';
 
 final _firestore = FirebaseFirestore.instance;
 User? loggedinuser;
+bool flag = false;
+String? owid;
 
 class showmembers extends StatefulWidget {
   static const String id = 'showmember';
   String iid;
-  showmembers(this.iid);
+  int len;
+  showmembers(this.iid, this.len);
   @override
-  _showmembersState createState() => _showmembersState(this.iid);
+  _showmembersState createState() => _showmembersState(this.iid, this.len);
 }
 
 class _showmembersState extends State<showmembers> {
@@ -22,12 +26,14 @@ class _showmembersState extends State<showmembers> {
   final CollectionReference grouplist =
       FirebaseFirestore.instance.collection('group');
   String iid;
-  _showmembersState(this.iid);
+  int len;
+  _showmembersState(this.iid, this.len);
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     getcurrentuser();
+    pratik();
   }
 
   void getcurrentuser() async {
@@ -40,6 +46,124 @@ class _showmembersState extends State<showmembers> {
 
     ///   print(loggedinuser!.email);
 //    print(loggedinuser!.phoneNumber);
+  }
+
+  Future updateuserdata1(String uid, List aa) async {
+    return await grouplist.doc(uid).update({'amount': aa});
+  }
+
+  Future pratik() async {
+    try {
+      int c = 0;
+      await friendlist.get().then((QuerySnapshot) {
+        QuerySnapshot.docs.forEach((element) {
+          String ppp = element.get('owner');
+          if (ppp == loggedinuser!.email.toString()) {
+            owid = element.id;
+            print(owid);
+            print(iid);
+          }
+          // final x = element.data();
+        });
+      });
+    } catch (e) {
+      print(e);
+    }
+  }
+
+  Future getuserlist(double x, String d, String iid) async {
+    List itemlist = [];
+    List ids = [];
+    try {
+      int c = 0;
+      await grouplist.get().then((QuerySnapshot) {
+        QuerySnapshot.docs.forEach((element) {
+          ids.add(element.id);
+          itemlist.add(element.data());
+          c++;
+          // final x = element.data();
+        });
+      });
+      for (var i = 0; i < c; i++) {
+        if (ids[i] == iid) {
+//          print(iid);
+          String mn = itemlist[i]['leader'];
+          if (mn == loggedinuser!.uid.toString()) {
+            flag = true;
+            print('mynameeee');
+          }
+          List bb = itemlist[i]['amount'];
+          // for (int i = 0; i < bb.length; i++) print(bb[i]);
+          for (int j = 0; j < bb.length; j++) {
+            //List mm = [];
+            String p = bb[j];
+            String maily = '';
+            String opponent = '';
+            int c = 0;
+            int h;
+            int k;
+            for (k = 0; k < p.length; k++) {
+              if (p[k] == ' ') {
+                c = 1;
+                k++;
+                // h=k+1;
+                break;
+              }
+              if (c == 0) {
+                maily += p[k];
+              }
+            }
+            for (h = k; h < p.length; h++) {
+              if (p[h] == ' ') {
+                break;
+              }
+              opponent += p[h];
+            }
+            //       print(maily + d);
+            if (maily == d) {
+              String dd = '';
+              for (int k = p.length - 1; k >= 0; k--) {
+                if (p[k] == ' ') {
+                  break;
+                }
+                dd += p[k];
+              }
+              String amtt = '';
+              for (int k = dd.length - 1; k >= 0; k--) {
+                amtt += dd[k];
+              }
+              double pk = double.parse(amtt);
+              pk += x;
+              String kp = pk.toString();
+              String pop = '';
+              pop += maily + ' ' + opponent + ' ' + kp;
+              bb[j] = pop;
+            } else if (opponent == d) {
+              String dd = '';
+              for (int k = p.length - 1; k >= 0; k--) {
+                if (p[k] == ' ') {
+                  break;
+                }
+                dd += p[k];
+              }
+              String amtt = '';
+              for (int k = dd.length - 1; k >= 0; k--) {
+                amtt += dd[k];
+              }
+              double pk = double.parse(amtt);
+              pk = pk - x;
+              String kp = pk.toString();
+              String pop = '';
+              pop += maily + ' ' + opponent + ' ' + kp;
+              bb[j] = pop;
+            }
+          }
+          updateuserdata1(iid, bb);
+        }
+      }
+    } catch (e) {
+      print(e);
+    }
   }
 
   String ans = '';
@@ -66,6 +190,8 @@ class _showmembersState extends State<showmembers> {
           ),
           TextButton(
             onPressed: () {
+              print(iid);
+              print(owid);
               Navigator.push(context,
                   MaterialPageRoute(builder: (BuildContext context) {
                 return moneydist(iid, ans);
@@ -74,9 +200,28 @@ class _showmembersState extends State<showmembers> {
             child: Text('Split with few members'),
           ),
           TextButton(
-            onPressed: () {},
+            onPressed: () {
+              double x = double.parse(ans);
+              //  print(x);
+              // int len = func(iid) as int;
+              //print(len);
+              x = x / len;
+              //  mp.clear();
+              getuserlist(x, loggedinuser!.email.toString(), iid);
+            },
             child: Text('Split with all members'),
-          )
+          ),
+          TextButton(
+              onPressed: () {
+                // pratik();
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (BuildContext context) {
+                    return addfromfriendlist(iid, owid!);
+                  }),
+                );
+              },
+              child: Text('Add members from your friend list to the group!')),
         ],
       )),
     );
