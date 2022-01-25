@@ -38,6 +38,41 @@ class _addfromfriendlistState extends State<addfromfriendlist> {
     getcurrentuser();
   }
 
+  Future a1(String uid, List aa) async {
+    return await grouplist.doc(uid).update({'members': aa});
+  }
+
+  Future a2(String uid, List aa) async {
+    return await grouplist.doc(uid).update({'amount': aa});
+  }
+
+  Future updatetrans(String gid) async {
+    try {
+      //print(ab);
+      // print('klkllklklklklklk');
+
+      for (int i = 0; i < ab.length; i++) {
+        String d = ab[i];
+        print(d);
+        final gval =
+            await FirebaseFirestore.instance.collection('group').doc(gid).get();
+        List mem = gval.get('members');
+        List money = gval.get('amount');
+        for (int j = 0; j < mem.length; j++) {
+          String pq = mem[j] + ' ' + d + ' ' + '0';
+          String qp = d + ' ' + mem[j] + ' ' + '0';
+          money.add(pq);
+          money.add(qp);
+        }
+        a2(gid, money);
+        mem.add(d);
+        a1(gid, mem);
+      }
+    } catch (e) {
+      print(e);
+    }
+  }
+
   void getcurrentuser() async {
     try {
       final user = await _auth.currentUser;
@@ -63,15 +98,9 @@ class _addfromfriendlistState extends State<addfromfriendlist> {
           namestream1(owid),
           TextButton(
             onPressed: () async {
-              final gval = await FirebaseFirestore.instance
-                  .collection('group')
-                  .doc(iid)
-                  .get();
-              List aa = gval.get('members');
-              for (int i = 0; i < ab.length; i++) aa.add(ab[i]);
+              await updatetrans(iid);
 
-              updateuserdata12(iid, aa);
-
+              //print(aa);
               ab.clear();
 
               Navigator.pop(context);

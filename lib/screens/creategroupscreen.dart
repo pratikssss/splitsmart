@@ -214,7 +214,7 @@ class grpbubble extends StatelessWidget {
               onPressed: () {
                 Navigator.push(context,
                     MaterialPageRoute(builder: (BuildContext context) {
-                  return showmembers(iid, len);
+                  return showmembers(iid);
                 }));
               },
               child: Text(

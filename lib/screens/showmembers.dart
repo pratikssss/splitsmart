@@ -10,14 +10,15 @@ final _firestore = FirebaseFirestore.instance;
 User? loggedinuser;
 bool flag = false;
 String? owid;
+int? len;
 
 class showmembers extends StatefulWidget {
   static const String id = 'showmember';
   String iid;
-  int len;
-  showmembers(this.iid, this.len);
+  //int len;
+  showmembers(this.iid);
   @override
-  _showmembersState createState() => _showmembersState(this.iid, this.len);
+  _showmembersState createState() => _showmembersState(this.iid);
 }
 
 class _showmembersState extends State<showmembers> {
@@ -26,8 +27,8 @@ class _showmembersState extends State<showmembers> {
   final CollectionReference grouplist =
       FirebaseFirestore.instance.collection('group');
   String iid;
-  int len;
-  _showmembersState(this.iid, this.len);
+
+  _showmembersState(this.iid);
   @override
   void initState() {
     // TODO: implement initState
@@ -69,6 +70,13 @@ class _showmembersState extends State<showmembers> {
     } catch (e) {
       print(e);
     }
+  }
+
+  Future lenfind(String iid) async {
+    final gval =
+        await FirebaseFirestore.instance.collection('group').doc(iid).get();
+    List aa = gval.get('members');
+    len = aa.length;
   }
 
   Future getuserlist(double x, String d, String iid) async {
@@ -200,13 +208,10 @@ class _showmembersState extends State<showmembers> {
             child: Text('Split with few members'),
           ),
           TextButton(
-            onPressed: () {
+            onPressed: () async {
               double x = double.parse(ans);
-              //  print(x);
-              // int len = func(iid) as int;
-              //print(len);
-              x = x / len;
-              //  mp.clear();
+              await lenfind(iid);
+              x = x / len!;
               getuserlist(x, loggedinuser!.email.toString(), iid);
             },
             child: Text('Split with all members'),
