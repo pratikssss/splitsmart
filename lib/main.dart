@@ -11,6 +11,7 @@ import 'package:splitsmart/screens/creategroupscreen.dart';
 import 'package:splitsmart/screens/friendscreen.dart';
 import 'package:splitsmart/screens/groups_screen.dart';
 import 'package:splitsmart/loginpages/loginpage.dart';
+import 'package:splitsmart/screens/groupsowned.dart';
 import 'package:splitsmart/screens/joingroup.dart';
 import 'package:splitsmart/screens/welcome_screen.dart';
 
@@ -35,6 +36,7 @@ class MyApp extends StatelessWidget {
       initialRoute: welcomescreen.id,
       routes: {
         //addfromfriendlist.id:(context)=>addfromfriendlist(),
+        groupsowned.id: (context) => groupsowned(),
         sendfriendrequest.id: (context) => sendfriendrequest(),
         joingroup.id: (context) => joingroup(),
         loginpage.id: (context) => loginpage(),

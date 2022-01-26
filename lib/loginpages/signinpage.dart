@@ -36,8 +36,9 @@ class _signinpageState extends State<signinpage> {
               Hero(
                 tag: 'logo',
                 child: Container(
-                  height: 200.0,
-                  //  child: Image.asset('android/images/logo.png'),
+                  child: Image(
+                    image: AssetImage('android/images/money.jpg'),
+                  ),
                 ),
               ),
               SizedBox(
@@ -70,7 +71,7 @@ class _signinpageState extends State<signinpage> {
               SizedBox(
                 height: 24.0,
               ),
-              roundedbutton('Register', Colors.blueAccent, () async {
+              roundedbutton('Register', Color(0xff80CBC4), () async {
                 setState(() {
                   showspinner = true;
                 });

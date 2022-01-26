@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:splitsmart/friends/pendingrequests.dart';
+import 'package:splitsmart/others/buttonnforall.dart';
 import 'package:splitsmart/others/constants.dart';
 import 'package:splitsmart/others/reusable.dart';
 import 'package:splitsmart/screens/friendscreen.dart';
@@ -77,8 +78,8 @@ class _pendingrequestState extends State<pendingrequest> {
         body: Column(
           children: [
             Text(
-              "Pending ",
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              "Pending Friend Requests",
+              style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
             ),
             Expanded(child: friendstream()),
           ],
@@ -117,14 +118,14 @@ class friendstream extends StatelessWidget {
                 final hh = grpbubble(ls[j]);
                 print(ls[j]);
                 // String loggedinmail = loggedinuser!.email.toString();
-                grps.add(hh);
+                grps.insert(0, hh);
+                //  grps.add(hh);
               }
               //grps.reversed;
             }
           }
           return Expanded(
             child: ListView(
-              reverse: true,
               padding: EdgeInsets.symmetric(horizontal: 10, vertical: 20),
               children: grps,
             ),
@@ -171,67 +172,69 @@ class grpbubble extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Material(
-          //    borderRadius: BorderRadius.only(
-          //      topRight: Radius.circular(30),
-          //    bottomLeft: Radius.circular(30),
-          //   bottomRight: Radius.circular(30)),
-          elevation: 5,
-          color: Colors.green.shade300,
-          child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-            child: TextButton(
-              onPressed: () {
-                //Navigator.push(context,
-                //   MaterialPageRoute(builder: (BuildContext context) {
-                // return showmembers(iid, len);
-                // }));
+        Container(
+          decoration: BoxDecoration(
+            border: Border.all(
+              color: Colors.lightBlue.shade900, // red as border color
+            ),
+          ),
+          child: Material(
+            //    borderRadius: BorderRadius.only(
+            //      topRight: Radius.circular(30),
+            //    bottomLeft: Radius.circular(30),
+            //   bottomRight: Radius.circular(30)),
+            elevation: 5,
+            color: Colors.blue.shade50,
+            child: Padding(
+              padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+              child: TextButton(
+                onPressed: () {
+                  //Navigator.push(context,
+                  //   MaterialPageRoute(builder: (BuildContext context) {
+                  // return showmembers(iid, len);
+                  // }));
 
-                showDialog(
-                  context: context,
-                  builder: (BuildContext context) {
-                    return Scaffold(
-                        backgroundColor: Colors.transparent,
-                        body: SafeArea(
-                            child: Expanded(
-                          child: Center(
-                            child: Column(
-                              children: [
-                                TextButton(
-                                  onPressed: () {
-                                    func(a);
-                                    Navigator.pop(context);
-                                  },
-                                  child: Text(
-                                    'Add Friend',
-                                    style: TextStyle(
-                                        fontSize: 20,
-                                        fontWeight: FontWeight.w300),
+                  showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return Scaffold(
+                          backgroundColor: Colors.transparent,
+                          body: SafeArea(
+                              child: Expanded(
+                            flex: 1,
+                            child: Center(
+                              child: Column(
+                                children: [
+                                  Expanded(flex: 1, child: Container()),
+                                  Expanded(
+                                    flex: 2,
+                                    child: Column(
+                                      children: [
+                                        buttonn('Add Friend', () {
+                                          func(a);
+                                          Navigator.pop(context);
+                                        }),
+                                        SizedBox(height: 5),
+                                        buttonn('Remove Request', () {
+                                          func1(a);
+                                          Navigator.pop(context);
+                                        }),
+                                      ],
+                                    ),
                                   ),
-                                ),
-                                TextButton(
-                                  onPressed: () {
-                                    func1(a);
-                                    Navigator.pop(context);
-                                  },
-                                  child: Text(
-                                    'Remove Requests',
-                                    style: TextStyle(
-                                        fontSize: 20,
-                                        fontWeight: FontWeight.w300),
-                                  ),
-                                )
-                              ],
+                                ],
+                              ),
                             ),
-                          ),
-                        )));
-                  },
-                );
-              },
-              child: Text(
-                a,
-                style: TextStyle(color: Colors.black38),
+                          )));
+                    },
+                  );
+                },
+                child: Text(
+                  a,
+                  style: TextStyle(color: Colors.black),
+                ),
               ),
             ),
           ),

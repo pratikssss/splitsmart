@@ -4,6 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:splitsmart/friends/pendingrequests.dart';
+import 'package:splitsmart/others/buttonnforall.dart';
 import 'package:splitsmart/screens/addfromfriendlist.dart';
 import 'package:splitsmart/screens/showmembers.dart';
 
@@ -95,9 +96,18 @@ class _addfromfriendlistState extends State<addfromfriendlist> {
       body: SafeArea(
           child: Column(
         children: [
+          SizedBox(
+            height: 2,
+          ),
+          const Text(
+            'Your Friends',
+            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 30),
+          ),
+          SizedBox(height: 3),
           namestream1(owid),
-          TextButton(
-            onPressed: () async {
+          buttonn(
+            'Add',
+            () async {
               await updatetrans(iid);
 
               //print(aa);
@@ -105,7 +115,9 @@ class _addfromfriendlistState extends State<addfromfriendlist> {
 
               Navigator.pop(context);
             },
-            child: Text('Add'),
+          ),
+          SizedBox(
+            height: 3,
           ),
         ],
       )),
@@ -139,14 +151,15 @@ class namestream1 extends StatelessWidget {
               final pp = i.get('friends');
               for (int j = 0; j < pp.length; j++) {
                 final hh = namebubble(pp[j]);
-                names.add(hh);
+                names.insert(0, hh);
+                // names.add(hh);
               }
               //grps.reversed;
             }
           }
           return Expanded(
             child: ListView(
-              reverse: true,
+              //reverse: true,
               padding: EdgeInsets.symmetric(horizontal: 10, vertical: 20),
               children: names,
             ),
@@ -170,6 +183,7 @@ class _namebubbleState extends State<namebubble> {
   @override
   Widget build(BuildContext context) {
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Material(
           //    borderRadius: BorderRadius.only(
@@ -177,7 +191,7 @@ class _namebubbleState extends State<namebubble> {
           //    bottomLeft: Radius.circular(30),
           //   bottomRight: Radius.circular(30)),
           elevation: 5,
-          color: c ? Colors.green.shade400 : Colors.white,
+          color: c ? Color(0XFF26D6DA) : Colors.white,
           //color: c ? Colors.lightBlueAccent : Colors.white,
           child: Padding(
             padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
@@ -195,7 +209,8 @@ class _namebubbleState extends State<namebubble> {
               },
               child: Text(
                 widget.pp,
-                style: TextStyle(color: Colors.black38),
+                style:
+                    TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
               ),
             ),
           ),

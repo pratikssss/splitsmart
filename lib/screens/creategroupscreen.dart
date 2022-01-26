@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:splitsmart/loginpages/loginpage.dart';
+import 'package:splitsmart/others/buttonnforall.dart';
 import 'package:splitsmart/others/constants.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:splitsmart/screens/groups_screen.dart';
 import 'package:splitsmart/screens/showmembers.dart';
 
+var msgcontroller = TextEditingController();
 final _firestore = FirebaseFirestore.instance;
 User? loggedinuser;
 
@@ -87,6 +89,7 @@ class _creategroupscreenState extends State<creategroupscreen> {
           children: [
             Expanded(child: grpstream()),
             TextField(
+              controller: msgcontroller,
               keyboardType: TextInputType.emailAddress,
               textAlign: TextAlign.center,
               onChanged: (value) {
@@ -96,13 +99,14 @@ class _creategroupscreenState extends State<creategroupscreen> {
               decoration:
                   kinputdecoration.copyWith(hintText: 'Enter your group name'),
             ),
-            TextButton(
-              onPressed: () {
+            SizedBox(height: 4),
+            buttonn('Create', () {
+              {
                 //List<String> op;
 
                 //  messagetextcontroller.clear();
                 //Implement send functionality.
-                messagetextcontroller.clear();
+                msgcontroller.clear();
 
                 //Implement send functionality.
                 //   members.add(loggedinuser!.uid.toString());
@@ -116,23 +120,12 @@ class _creategroupscreenState extends State<creategroupscreen> {
                 });
                 getuserlist(loggedinuser!.email.toString());
                 //     updateuserdata('donnn', "uKZbyPaSVd819mb17IFP");
-              },
-              child: Text(
-                'Create',
-                style: kSendButtonTextStyle,
-              ),
-            ),
-            TextButton(
-              onPressed: () {
-                //  messagetextcontroller.clear();
-                //Implement send functionality.
-                Navigator.pushNamed(context, groupscreen.id);
-              },
-              child: Text(
-                'back',
-                style: kSendButtonTextStyle,
-              ),
-            ),
+              }
+            }),
+            SizedBox(height: 4),
+            buttonn('Back', () {
+              Navigator.pop(context);
+            })
           ],
         )),
       ),
@@ -165,7 +158,11 @@ class grpstream extends StatelessWidget {
             // print(abc);
             List ls = i.get('members');
             int dd = ls.length;
-            final hh = grpbubble(pp, qq, abc, dd);
+            bool k = false;
+            if (qq == loggedinuser!.uid.toString()) {
+              k = true;
+            }
+            final hh = grpbubble(pp, qq, abc, dd, k);
             String loggedinmail = loggedinuser!.email.toString();
 
             int c = 0;
@@ -176,12 +173,15 @@ class grpstream extends StatelessWidget {
               }
             }
             if (hh == loggedinmail) c = 1;
-            if (c == 1) grps.add(hh);
+            if (c == 1) {
+              // grps.add(hh);
+              grps.insert(0, hh);
+            }
+
             //grps.reversed;
           }
           return Expanded(
             child: ListView(
-              reverse: true,
               padding: EdgeInsets.symmetric(horizontal: 10, vertical: 20),
               children: grps,
             ),
@@ -195,33 +195,42 @@ class grpbubble extends StatelessWidget {
   late String b;
   late String iid;
   int len;
-  grpbubble(this.a, this.b, this.iid, this.len);
+  bool k;
+  grpbubble(this.a, this.b, this.iid, this.len, this.k);
 
   @override
   Widget build(BuildContext context) {
+    //check(iid);
     return Column(
       children: [
+        SizedBox(height: 20),
         Material(
-          //    borderRadius: BorderRadius.only(
-          //      topRight: Radius.circular(30),
-          //    bottomLeft: Radius.circular(30),
-          //   bottomRight: Radius.circular(30)),
+          borderRadius: BorderRadius.only(
+              topRight: Radius.circular(30),
+              bottomLeft: Radius.circular(30),
+              bottomRight: Radius.circular(30),
+              topLeft: Radius.circular(30)),
           elevation: 5,
-          color: Colors.green.shade300,
-          child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-            child: TextButton(
-              onPressed: () {
-                Navigator.push(context,
-                    MaterialPageRoute(builder: (BuildContext context) {
-                  return showmembers(iid);
-                }));
-              },
-              child: Text(
-                a,
-                style: TextStyle(color: Colors.black38),
+          color: Color(0xFF80DEEA),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                child: TextButton(
+                  onPressed: () {
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (BuildContext context) {
+                      return showmembers(iid, k);
+                    }));
+                  },
+                  child: Text(
+                    a,
+                    style: TextStyle(color: Colors.white),
+                  ),
+                ),
               ),
-            ),
+            ],
           ),
         ),
       ],

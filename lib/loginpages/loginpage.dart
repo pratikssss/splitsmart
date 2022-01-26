@@ -35,8 +35,10 @@ class _loginpageState extends State<loginpage> {
               Hero(
                 tag: 'logo',
                 child: Container(
-                  height: 200.0,
-                  //    child: Image.asset('android/images/logo.png'),
+                  child: Image(
+                    height: 100,
+                    image: AssetImage('android/images/money.jpg'),
+                  ),
                 ),
               ),
               SizedBox(
@@ -68,7 +70,7 @@ class _loginpageState extends State<loginpage> {
               SizedBox(
                 height: 24.0,
               ),
-              roundedbutton('Log In', Colors.lightBlueAccent, () async {
+              roundedbutton('Log In', Color(0xff80CBC4), () async {
                 setState(() {
                   showspinner = true;
                 });

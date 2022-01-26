@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:splitsmart/others/buttonnforall.dart';
 import 'package:splitsmart/others/constants.dart';
 import 'package:splitsmart/others/roundedbutton.dart';
 import 'package:splitsmart/screens/addfromfriendlist.dart';
@@ -15,10 +16,11 @@ int? len;
 class showmembers extends StatefulWidget {
   static const String id = 'showmember';
   String iid;
+  bool k;
   //int len;
-  showmembers(this.iid);
+  showmembers(this.iid, this.k);
   @override
-  _showmembersState createState() => _showmembersState(this.iid);
+  _showmembersState createState() => _showmembersState(this.iid, this.k);
 }
 
 class _showmembersState extends State<showmembers> {
@@ -27,14 +29,28 @@ class _showmembersState extends State<showmembers> {
   final CollectionReference grouplist =
       FirebaseFirestore.instance.collection('group');
   String iid;
-
-  _showmembersState(this.iid);
+  bool k;
+  _showmembersState(this.iid, this.k);
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     getcurrentuser();
     pratik();
+    //  check();
+  }
+
+  void check() async {
+    final gval =
+        await FirebaseFirestore.instance.collection('group').doc(iid).get();
+    String x = gval.get('leader');
+    setState(() {
+      if (x == loggedinuser!.uid.toString()) {
+        k = true;
+      } else {
+        k = false;
+      }
+    });
   }
 
   void getcurrentuser() async {
@@ -196,82 +212,48 @@ class _showmembersState extends State<showmembers> {
             },
             decoration: kinputdecoration.copyWith(hintText: 'Enter the money'),
           ),
-          TextButton(
-            onPressed: () {
-              print(iid);
-              print(owid);
-              Navigator.push(context,
-                  MaterialPageRoute(builder: (BuildContext context) {
-                return moneydist(iid, ans);
-              }));
-            },
-            child: Text('Split with few members'),
+          SizedBox(
+            height: 3,
           ),
-          TextButton(
-            onPressed: () async {
+          buttonn('Split with few members', () {
+            print(iid);
+            print(owid);
+            Navigator.push(context,
+                MaterialPageRoute(builder: (BuildContext context) {
+              return moneydist(iid, ans);
+            }));
+          }),
+          SizedBox(
+            height: 3,
+          ),
+          buttonn(
+            'Split with all members',
+            () async {
               double x = double.parse(ans);
               await lenfind(iid);
               x = x / len!;
               getuserlist(x, loggedinuser!.email.toString(), iid);
             },
-            child: Text('Split with all members'),
           ),
-          TextButton(
-              onPressed: () {
-                // pratik();
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (BuildContext context) {
-                    return addfromfriendlist(iid, owid!);
-                  }),
-                );
-              },
-              child: Text('Add members from your friend list to the group!')),
+          SizedBox(
+            height: 3,
+          ),
+          Visibility(
+            visible: k ? true : false,
+            child:
+                buttonn('Add members from your friend list to the group', () {
+              // pratik();
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (BuildContext context) {
+                  return addfromfriendlist(iid, owid!);
+                }),
+              );
+            }),
+          ),
         ],
       )),
     );
-  }
-}
-
-class namestream1 extends StatelessWidget {
-  String? iid;
-  namestream1(this.iid);
-  @override
-  Widget build(BuildContext context) {
-    return StreamBuilder<QuerySnapshot>(
-        stream: _firestore
-            .collection('group')
-            .orderBy('ttime', descending: true)
-            .snapshots(),
-        builder: (context, snapshot) {
-          List<namebubble> names = [];
-          if (!snapshot.hasData) {
-            return Center(
-              child: CircularProgressIndicator(
-                backgroundColor: Colors.lightBlueAccent,
-              ),
-            );
-          }
-          final x = snapshot.data!.docs;
-          for (var i in x) {
-            final abc = i.id;
-            if (iid == abc) {
-              final pp = i.get('members');
-              for (int j = 0; j < pp.length; j++) {
-                final hh = namebubble(pp[j]);
-                names.add(hh);
-              }
-              //grps.reversed;
-            }
-          }
-          return Expanded(
-            child: ListView(
-              reverse: true,
-              padding: EdgeInsets.symmetric(horizontal: 10, vertical: 20),
-              children: names,
-            ),
-          );
-        });
   }
 }
 
@@ -340,20 +322,23 @@ class namestream extends StatelessWidget {
                   if (amounts == 0) {
                     String s = '';
                     s += 'You are all settled up with $opponent ';
-                    final hh = namebubble(s);
-                    names.add(hh);
+                    final hh = namebubble(s, true);
+                    names.insert(0, hh);
+                    // names.add(hh);
                   } else if (amounts > 0) {
                     String s = '';
                     s += '$opponent owes you $amtt Rs';
-                    final hh = namebubble(s);
-                    names.add(hh);
+                    final hh = namebubble(s, true);
+                    names.insert(0, hh);
+                    // names.add(hh);
                   } else {
                     String s = '';
                     String abc = '';
                     for (int h = 1; h < amtt.length; h++) abc += amtt[h];
                     s += 'You owe $opponent  $abc Rs';
-                    final hh = namebubble(s);
-                    names.add(hh);
+                    final hh = namebubble(s, false);
+                    names.insert(0, hh);
+                    // names.add(hh);
                   }
                 }
               }
@@ -362,7 +347,7 @@ class namestream extends StatelessWidget {
           }
           return Expanded(
             child: ListView(
-              reverse: true,
+//              reverse: true,
               padding: EdgeInsets.symmetric(horizontal: 10, vertical: 20),
               children: names,
             ),
@@ -373,26 +358,37 @@ class namestream extends StatelessWidget {
 
 class namebubble extends StatelessWidget {
   late String pp;
-  namebubble(this.pp);
-
+  namebubble(this.pp, this.flag);
+  bool flag;
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
-        Material(
-          //    borderRadius: BorderRadius.only(
-          //      topRight: Radius.circular(30),
-          //    bottomLeft: Radius.circular(30),
-          //   bottomRight: Radius.circular(30)),
-          elevation: 5,
-          color: Colors.green.shade300,
-          child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-            child: Text(
-              pp,
-              style: TextStyle(color: Colors.black38),
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            SizedBox(
+              height: 4,
             ),
-          ),
+            Material(
+              //    borderRadius: BorderRadius.only(
+              //      topRight: Radius.circular(30),
+              //    bottomLeft: Radius.circular(30),
+              //   bottomRight: Radius.circular(30)),
+              elevation: 5,
+              // color: Colors.green.shade300,
+              child: Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 30, vertical: 20),
+                  child: Text(
+                    pp,
+                    style: TextStyle(
+                        fontStyle: FontStyle.italic,
+                        fontWeight: FontWeight.w600,
+                        fontSize: 15,
+                        color: flag ? Colors.green.shade300 : Colors.red),
+                  )),
+            ),
+          ],
         ),
       ],
     );

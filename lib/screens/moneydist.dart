@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:splitsmart/others/buttonnforall.dart';
 import 'package:splitsmart/screens/addfromfriendlist.dart';
 
 final _firestore = FirebaseFirestore.instance;
@@ -156,23 +157,27 @@ class _moneydistState extends State<moneydist> {
       body: SafeArea(
           child: Column(
         children: [
-          namestream1(iid),
-          TextButton(
-            onPressed: () {
-              double x = double.parse(ans);
-              print(x);
-              for (int j = 0; j < ab.length; j++) print(ab[j]);
-              int len = ab.length;
-              x = x / len;
-              print(x);
-              for (int i = 0; i < ab.length; i++) mp[ab[i]] = 1;
-              ab.clear();
-              //  mp.clear();
-              getuserlist(x, loggedinuser!.email.toString(), iid, mp);
-              Navigator.pop(context);
-            },
-            child: Text('Lesssgooo'),
+          const Text(
+            'Group Members',
+            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 30),
           ),
+          SizedBox(
+            height: 3,
+          ),
+          namestream1(iid),
+          buttonn('Lessgooo', () {
+            double x = double.parse(ans);
+            print(x);
+            for (int j = 0; j < ab.length; j++) print(ab[j]);
+            int len = ab.length;
+            x = x / len;
+            print(x);
+            for (int i = 0; i < ab.length; i++) mp[ab[i]] = 1;
+            ab.clear();
+            //  mp.clear();
+            getuserlist(x, loggedinuser!.email.toString(), iid, mp);
+            Navigator.pop(context);
+          }),
           SizedBox(height: 30),
         ],
       )),
@@ -206,14 +211,15 @@ class namestream1 extends StatelessWidget {
               final pp = i.get('members');
               for (int j = 0; j < pp.length; j++) {
                 final hh = namebubble(pp[j]);
-                names.add(hh);
+                // names.add(hh);
+                names.insert(0, hh);
               }
               //grps.reversed;
             }
           }
           return Expanded(
             child: ListView(
-              reverse: true,
+              //reverse: true,
               padding: EdgeInsets.symmetric(horizontal: 10, vertical: 20),
               children: names,
             ),
@@ -237,6 +243,7 @@ class _namebubbleState extends State<namebubble> {
   @override
   Widget build(BuildContext context) {
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Material(
           //    borderRadius: BorderRadius.only(
@@ -244,7 +251,7 @@ class _namebubbleState extends State<namebubble> {
           //    bottomLeft: Radius.circular(30),
           //   bottomRight: Radius.circular(30)),
           elevation: 5,
-          color: c ? Colors.green.shade400 : Colors.white,
+          color: c ? Colors.teal.shade200 : Colors.white,
           //color: c ? Colors.lightBlueAccent : Colors.white,
           child: Padding(
             padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
@@ -262,7 +269,7 @@ class _namebubbleState extends State<namebubble> {
               },
               child: Text(
                 widget.pp,
-                style: TextStyle(color: Colors.black38),
+                style: TextStyle(color: Colors.black),
               ),
             ),
           ),

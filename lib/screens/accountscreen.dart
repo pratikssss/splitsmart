@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:splitsmart/loginpages/loginpage.dart';
+import 'package:splitsmart/others/buttonnforall.dart';
 import 'package:splitsmart/others/reusable.dart';
+import 'package:splitsmart/screens/groupsowned.dart';
 
 import 'friendscreen.dart';
 import 'groups_screen.dart';
@@ -40,11 +43,43 @@ class _accountscreenState extends State<accountscreen> {
     return WillPopScope(
       onWillPop: _onBackPressed,
       child: Scaffold(
-        appBar: AppBar(
-          title: Text('SplitSmart'),
-        ),
-        body: Text('Account'),
-      ),
+          appBar: AppBar(
+            title: Text('SplitSmart'),
+          ),
+          body: SafeArea(
+              child: Column(
+            children: [
+              Container(
+                width: 200,
+                height: 200,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  image: DecorationImage(
+                    image: AssetImage('android/images/mmoney.jpg'),
+                    fit: BoxFit.fill,
+                  ),
+                ),
+              ),
+              Column(
+                children: [
+                  Container(
+                    height: 50.0,
+                    margin: EdgeInsets.all(10),
+                    child: buttonn('Your details', () {
+                      Navigator.pushNamed(context, groupsowned.id);
+                    }),
+                  ),
+                  Container(
+                    height: 50.0,
+                    margin: EdgeInsets.all(10),
+                    child: buttonn('Logout', () {
+                      Navigator.pushNamed(context, loginpage.id);
+                    }),
+                  ),
+                ],
+              )
+            ],
+          ))),
     );
   }
 }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:splitsmart/others/buttonnforall.dart';
 import 'package:splitsmart/others/reusable.dart';
 import 'package:splitsmart/screens/creategroupscreen.dart';
 import 'package:splitsmart/screens/joingroup.dart';
@@ -46,16 +47,21 @@ class _groupscreenState extends State<groupscreen> {
           ),
           body: Column(
             children: [
-              TextButton(
-                  onPressed: () {
-                    Navigator.pushNamed(context, creategroupscreen.id);
-                  },
-                  child: Text('Create a group')),
-              TextButton(
-                  onPressed: () {
-                    Navigator.pushNamed(context, joingroup.id);
-                  },
-                  child: Text('Join a group')),
+              Expanded(flex: 1, child: Container()),
+              Expanded(
+                flex: 2,
+                child: Column(
+                  children: [
+                    buttonn('Create a Group', () {
+                      Navigator.pushNamed(context, creategroupscreen.id);
+                    }),
+                    SizedBox(height: 20),
+                    buttonn('Join a Group', () {
+                      Navigator.pushNamed(context, joingroup.id);
+                    }),
+                  ],
+                ),
+              )
             ],
           )),
     );

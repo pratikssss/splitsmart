@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:splitsmart/friends/pendingrequests.dart';
+import 'package:splitsmart/others/buttonnforall.dart';
 import 'package:splitsmart/others/constants.dart';
 import 'package:splitsmart/others/reusable.dart';
 import 'package:splitsmart/screens/friendscreen.dart';
@@ -54,33 +55,40 @@ class _sendfriendrequestState extends State<sendfriendrequest> {
       body: SafeArea(
         child: Column(
           children: [
-            TextField(
-              // obscureText: true,
-              textAlign: TextAlign.center,
-              onChanged: (value) {
-                ans = value;
-                //Do something with the user input.
-              },
-              decoration: kinputdecoration.copyWith(hintText: 'Enter name'),
-            ),
-            TextButton(
-              onPressed: () async {
-                //  int c = 0;
-                await friendlist.get().then((QuerySnapshot) {
-                  QuerySnapshot.docs.forEach((element) {
-                    String p = element.get('owner');
-                    if (p == ans) {
-                      List aa = element.get('pendingreq');
-                      String uid = element.id;
-                      aa.add(loggedinuser!.email.toString());
-                      updateuserdata(uid, aa);
-                    }
-                    // final x = element.data();
-                  });
-                });
-              },
-              child: Text('Send Request'),
-            ),
+            Expanded(flex: 1, child: Container()),
+            Expanded(
+              flex: 2,
+              child: Column(
+                children: [
+                  TextField(
+                    // obscureText: true,
+                    textAlign: TextAlign.center,
+                    onChanged: (value) {
+                      ans = value;
+                      //Do something with the user input.
+                    },
+                    decoration:
+                        kinputdecoration.copyWith(hintText: 'Enter name'),
+                  ),
+                  SizedBox(height: 3),
+                  buttonn('Send Request', () async {
+                    //  int c = 0;
+                    await friendlist.get().then((QuerySnapshot) {
+                      QuerySnapshot.docs.forEach((element) {
+                        String p = element.get('owner');
+                        if (p == ans) {
+                          List aa = element.get('pendingreq');
+                          String uid = element.id;
+                          aa.add(loggedinuser!.email.toString());
+                          updateuserdata(uid, aa);
+                        }
+                        // final x = element.data();
+                      });
+                    });
+                  }),
+                ],
+              ),
+            )
           ],
         ),
       ),

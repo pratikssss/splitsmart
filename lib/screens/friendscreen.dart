@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:splitsmart/friends/pendingrequests.dart';
 import 'package:splitsmart/friends/sendfriendreq.dart';
+import 'package:splitsmart/others/buttonnforall.dart';
 import 'package:splitsmart/others/constants.dart';
 import 'package:splitsmart/others/reusable.dart';
 import 'package:splitsmart/screens/showmembers.dart';
@@ -82,26 +83,23 @@ class _friendscreenState extends State<friendscreen> {
                     .apply(fontSizeFactor: 2.0),
               ),
               Expanded(child: friendstream()),
-              TextButton(
-                onPressed: () {
-                  Navigator.push(context,
-                      MaterialPageRoute(builder: (BuildContext context) {
-                    return pendingrequest(iiid!);
-                  }));
-                },
-                child: Text(
-                  'See Pending Requests!',
-                  style: TextStyle(height: 3, fontSize: 20),
-                ),
+              buttonn('See Pending Requests', () {
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (BuildContext context) {
+                  return pendingrequest(iiid!);
+                }));
+              }),
+              SizedBox(
+                height: 4,
               ),
-              TextButton(
-                onPressed: () {
+              buttonn(
+                'Send Friends Requests',
+                () {
                   Navigator.pushNamed(context, sendfriendrequest.id);
                 },
-                child: Text(
-                  'Send Friend Request',
-                  style: TextStyle(height: 3, fontSize: 20),
-                ),
+              ),
+              SizedBox(
+                height: 3,
               ),
             ],
           )),
@@ -142,14 +140,15 @@ class friendstream extends StatelessWidget {
                 final hh = grpbubble(ls[j]);
                 print(ls[j]);
                 // String loggedinmail = loggedinuser!.email.toString();
-                grps.add(hh);
+                grps.insert(0, hh);
+                //grps.add(hh);
               }
               //grps.reversed;
             }
           }
           return Expanded(
             child: ListView(
-              reverse: true,
+              // reverse: true,
               padding: EdgeInsets.symmetric(horizontal: 10, vertical: 20),
               children: grps,
             ),
@@ -169,14 +168,19 @@ class grpbubble extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
+        SizedBox(
+          height: 3,
+        ),
         Material(
           //    borderRadius: BorderRadius.only(
           //      topRight: Radius.circular(30),
           //    bottomLeft: Radius.circular(30),
           //   bottomRight: Radius.circular(30)),
           elevation: 5,
-          color: Colors.green.shade300,
+          //   color: Colors.green.shade300,
+          color: Color(0XFF4FC3F7),
           child: Padding(
             padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
             child: TextButton(
@@ -188,7 +192,8 @@ class grpbubble extends StatelessWidget {
               },
               child: Text(
                 a,
-                style: TextStyle(color: Colors.black38),
+                style:
+                    TextStyle(color: Colors.black, fontWeight: FontWeight.w600),
               ),
             ),
           ),
