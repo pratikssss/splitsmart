@@ -11,6 +11,7 @@ import 'package:splitsmart/screens/friendscreen.dart';
 import 'package:splitsmart/screens/showmembers.dart';
 import 'package:splitsmart/screens/welcome_screen.dart';
 
+var msgcontroller = TextEditingController();
 final _firestore = FirebaseFirestore.instance;
 User? loggedinuser;
 int flag = 0;
@@ -62,6 +63,7 @@ class _sendfriendrequestState extends State<sendfriendrequest> {
                 children: [
                   TextField(
                     // obscureText: true,
+                    controller: msgcontroller,
                     textAlign: TextAlign.center,
                     onChanged: (value) {
                       ans = value;
@@ -79,12 +81,17 @@ class _sendfriendrequestState extends State<sendfriendrequest> {
                         if (p == ans) {
                           List aa = element.get('pendingreq');
                           String uid = element.id;
-                          aa.add(loggedinuser!.email.toString());
-                          updateuserdata(uid, aa);
+                          List bb = element.get('friends');
+                          if (!aa.contains(loggedinuser!.email.toString()) &&
+                              !bb.contains(loggedinuser!.email.toString())) {
+                            aa.add(loggedinuser!.email.toString());
+                            updateuserdata(uid, aa);
+                          }
                         }
                         // final x = element.data();
                       });
                     });
+                    msgcontroller.clear();
                   }),
                 ],
               ),

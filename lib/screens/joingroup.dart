@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
+import 'package:splitsmart/mybottomnavigation.dart';
 import 'package:splitsmart/others/constants.dart';
 import 'package:splitsmart/others/roundedbutton.dart';
 import 'package:splitsmart/screens/creategroupscreen.dart';
@@ -69,21 +70,23 @@ class _joingroupState extends State<joingroup> {
       for (var i = 0; i < c; i++) {
         if (ids[i] == gid) {
           List aa = itemlist[i]['members'];
-          List pq = itemlist[i]['amount'];
-          aa.add(d);
-          //for (var j = 0; j < aa.length; j++) print(aa[j]);
-          String uid = ids[i];
-          k = uid;
-          updateuserdata(uid, aa);
-          for (int j = 0; j < aa.length; j++) {
-            if (aa[j] != d) {
-              String df = d + ' ' + aa[j] + ' ' + '0';
-              pq.add(df);
-              String fd = aa[j] + ' ' + d + ' ' + '0';
-              pq.add(fd);
+          if (!aa.contains(loggedinuser!.email.toString())) {
+            List pq = itemlist[i]['amount'];
+            aa.add(d);
+            //for (var j = 0; j < aa.length; j++) print(aa[j]);
+            String uid = ids[i];
+            k = uid;
+            updateuserdata(uid, aa);
+            for (int j = 0; j < aa.length; j++) {
+              if (aa[j] != d) {
+                String df = d + ' ' + aa[j] + ' ' + '0';
+                pq.add(df);
+                String fd = aa[j] + ' ' + d + ' ' + '0';
+                pq.add(fd);
+              }
             }
+            mm = pq;
           }
-          mm = pq;
         }
       }
       updateuserdata1(k, mm);
@@ -122,7 +125,7 @@ class _joingroupState extends State<joingroup> {
                   showspinner = true;
                 });
                 getuserlist(gid!, loggedinuser!.email.toString());
-                Navigator.pushNamed(context, groupscreen.id);
+                Navigator.pop(context);
                 setState(() {
                   showspinner = false;
                 });

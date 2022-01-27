@@ -93,7 +93,7 @@ class _friendscreenState extends State<friendscreen> {
                 height: 4,
               ),
               buttonn(
-                'Send Friends Requests',
+                'Send a friend request',
                 () {
                   Navigator.pushNamed(context, sendfriendrequest.id);
                 },
@@ -140,7 +140,11 @@ class friendstream extends StatelessWidget {
                 final hh = grpbubble(ls[j]);
                 print(ls[j]);
                 // String loggedinmail = loggedinuser!.email.toString();
-                grps.insert(0, hh);
+                if (grps.length != 0) {
+                  grps.insert(0, hh);
+                } else {
+                  grps.add(hh);
+                }
                 //grps.add(hh);
               }
               //grps.reversed;

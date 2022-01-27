@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:splitsmart/friends/pendingrequests.dart';
 import 'package:splitsmart/friends/sendfriendreq.dart';
-import 'package:splitsmart/navi.dart';
+import 'package:splitsmart/mybottomnavigation.dart';
 import 'package:splitsmart/screens/accountscreen.dart';
 import 'package:splitsmart/others/cbutton.dart';
 import 'package:splitsmart/screens/addfromfriendlist.dart';
@@ -36,14 +36,14 @@ class MyApp extends StatelessWidget {
       initialRoute: welcomescreen.id,
       routes: {
         //addfromfriendlist.id:(context)=>addfromfriendlist(),
-        groupsowned.id: (context) => groupsowned(),
+        // groupsowned.id: (context) => groupsowned(),
         sendfriendrequest.id: (context) => sendfriendrequest(),
         joingroup.id: (context) => joingroup(),
         loginpage.id: (context) => loginpage(),
         welcomescreen.id: (context) => welcomescreen(),
         accountscreen.id: (context) => accountscreen(),
         groupscreen.id: (context) => groupscreen(),
-        Mybottomnavigationbar.id: (context) => Mybottomnavigationbar(),
+        //Mybottomnavigationbar.id: (context) => Mybottomnavigationbar(),
         creategroupscreen.id: (context) => creategroupscreen(),
         //  hoursspent.id: (context) => hoursspent(),
       },

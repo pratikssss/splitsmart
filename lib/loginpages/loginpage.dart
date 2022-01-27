@@ -1,6 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:splitsmart/navi.dart';
+import 'package:splitsmart/mybottomnavigation.dart';
 import 'package:splitsmart/others/constants.dart';
 import 'package:splitsmart/screens/groups_screen.dart';
 import 'package:splitsmart/main.dart';
@@ -78,7 +78,10 @@ class _loginpageState extends State<loginpage> {
                   final user = await _auth.signInWithEmailAndPassword(
                       email: email, password: password);
                   if (user != null) {
-                    Navigator.pushNamed(context, Mybottomnavigationbar.id);
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (BuildContext context) {
+                      return Mybottomnavigationbar(email);
+                    }));
                   }
                 } catch (e) {
                   print(e);

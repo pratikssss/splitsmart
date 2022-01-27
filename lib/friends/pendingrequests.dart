@@ -118,7 +118,11 @@ class friendstream extends StatelessWidget {
                 final hh = grpbubble(ls[j]);
                 print(ls[j]);
                 // String loggedinmail = loggedinuser!.email.toString();
-                grps.insert(0, hh);
+                if (grps.length != 0) {
+                  grps.insert(0, hh);
+                } else {
+                  grps.add(hh);
+                }
                 //  grps.add(hh);
               }
               //grps.reversed;
@@ -142,12 +146,40 @@ Future updateuserdata(String uid, List aa) async {
   return await friendlist.doc(uid).update({'friends': aa});
 }
 
+Future updatefrienddata(String uid, List pq) async {
+  return await friendlist.doc(uid).update({'friends': pq});
+}
+
+Future updateotherone(String a) async {
+  List itemlist = [];
+  List ids = [];
+  try {
+    await friendlist.get().then((QuerySnapshot) {
+      QuerySnapshot.docs.forEach((element) {
+        itemlist.add(element.data());
+        ids.add(element.id);
+      });
+    });
+    for (int i = 0; i < itemlist.length; i++) {
+      String s = itemlist[i]['owner'];
+      if (a == s) {
+        String fid = ids[i];
+        List f = itemlist[i]['friends'];
+        f.add(loggedinuser!.email.toString());
+        updatefrienddata(fid, f);
+        break;
+      }
+    }
+  } catch (e) {}
+}
+
 Future func(String a) async {
   final gval =
       await FirebaseFirestore.instance.collection('friendz').doc(iiid).get();
   List aa = gval.get('friends');
   aa.add(a);
   updateuserdata(iiid!, aa);
+  updateotherone(a);
   List bb = gval.get('pendingreq');
   bb.remove(a);
   updateuserdata1(iiid!, bb);
@@ -200,9 +232,9 @@ class grpbubble extends StatelessWidget {
                     context: context,
                     builder: (BuildContext context) {
                       return Scaffold(
-                          backgroundColor: Colors.transparent,
-                          body: SafeArea(
-                              child: Expanded(
+                        backgroundColor: Colors.transparent,
+                        body: SafeArea(
+                          child: Expanded(
                             flex: 1,
                             child: Center(
                               child: Column(
@@ -227,7 +259,9 @@ class grpbubble extends StatelessWidget {
                                 ],
                               ),
                             ),
-                          )));
+                          ),
+                        ),
+                      );
                     },
                   );
                 },

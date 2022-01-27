@@ -12,6 +12,7 @@ User? loggedinuser;
 bool flag = false;
 String? owid;
 int? len;
+var msgcontroller = TextEditingController();
 
 class showmembers extends StatefulWidget {
   static const String id = 'showmember';
@@ -204,6 +205,7 @@ class _showmembersState extends State<showmembers> {
           // Expanded(child: namestream1(iid)),
           Expanded(child: namestream(iid)),
           TextField(
+            controller: msgcontroller,
             //  obscureText: true,
             textAlign: TextAlign.center,
             onChanged: (value) {
@@ -218,10 +220,12 @@ class _showmembersState extends State<showmembers> {
           buttonn('Split with few members', () {
             print(iid);
             print(owid);
+
             Navigator.push(context,
                 MaterialPageRoute(builder: (BuildContext context) {
               return moneydist(iid, ans);
             }));
+            msgcontroller.clear();
           }),
           SizedBox(
             height: 3,
@@ -229,10 +233,12 @@ class _showmembersState extends State<showmembers> {
           buttonn(
             'Split with all members',
             () async {
+              // msgcontroller.clear();
               double x = double.parse(ans);
               await lenfind(iid);
               x = x / len!;
               getuserlist(x, loggedinuser!.email.toString(), iid);
+              msgcontroller.clear();
             },
           ),
           SizedBox(
@@ -247,6 +253,7 @@ class _showmembersState extends State<showmembers> {
                 context,
                 MaterialPageRoute(builder: (BuildContext context) {
                   return addfromfriendlist(iid, owid!);
+                  // msgcontroller.clear();
                 }),
               );
             }),
@@ -337,7 +344,11 @@ class namestream extends StatelessWidget {
                     for (int h = 1; h < amtt.length; h++) abc += amtt[h];
                     s += 'You owe $opponent  $abc Rs';
                     final hh = namebubble(s, false);
-                    names.insert(0, hh);
+                    if (names.length != 0) {
+                      names.insert(0, hh);
+                    } else {
+                      names.add(hh);
+                    }
                     // names.add(hh);
                   }
                 }

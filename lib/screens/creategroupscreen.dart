@@ -10,6 +10,9 @@ import 'package:splitsmart/screens/showmembers.dart';
 var msgcontroller = TextEditingController();
 final _firestore = FirebaseFirestore.instance;
 User? loggedinuser;
+final CollectionReference grouplist =
+    FirebaseFirestore.instance.collection('group');
+bool flag = true;
 
 class creategroupscreen extends StatefulWidget {
   static const String id = 'creategrp';
@@ -21,8 +24,6 @@ class creategroupscreen extends StatefulWidget {
 class _creategroupscreenState extends State<creategroupscreen> {
   final _auth = FirebaseAuth.instance;
   late String grpname;
-  final CollectionReference grouplist =
-      FirebaseFirestore.instance.collection('group');
 
   // ignore: deprecated_member_use
   List<String> members = [];
@@ -48,6 +49,32 @@ class _creategroupscreenState extends State<creategroupscreen> {
 
   Future updateuserdata(String uid, List aa) async {
     return await grouplist.doc(uid).update({'members': aa});
+  }
+
+  Future checkleader(String grpname) async {
+    List itemlist = [];
+    try {
+      int c = 0;
+      await grouplist.get().then((QuerySnapshot) {
+        QuerySnapshot.docs.forEach((element) {
+          //ids.add(element.id);
+          itemlist.add(element.data());
+          //c++;
+          // final x = element.data();
+          // final x=element.data();
+        });
+      });
+      for (int i = 0; i < itemlist.length; i++) {
+        String lead = itemlist[i]['leader'];
+        String gn = itemlist[i]['groupname'];
+        if (gn == grpname && lead == loggedinuser!.uid.toString()) {
+          flag = false;
+          break;
+        }
+      }
+    } catch (e) {
+      print(e);
+    }
   }
 
   Future getuserlist(String d) async {
@@ -100,7 +127,7 @@ class _creategroupscreenState extends State<creategroupscreen> {
                   kinputdecoration.copyWith(hintText: 'Enter your group name'),
             ),
             SizedBox(height: 4),
-            buttonn('Create', () {
+            buttonn('Create', () async {
               {
                 //List<String> op;
 
@@ -110,15 +137,19 @@ class _creategroupscreenState extends State<creategroupscreen> {
 
                 //Implement send functionality.
                 //   members.add(loggedinuser!.uid.toString());
-                _firestore.collection('group').add({
-                  'groupname': grpname,
-                  'leader': loggedinuser!.uid,
-                  'ttime': DateTime.now(),
-                  'members': [],
-                  'amount': [],
-                  //            'messageTime': DateTime.now(),
-                });
-                getuserlist(loggedinuser!.email.toString());
+                checkleader(grpname);
+                if (flag) {
+                  _firestore.collection('group').add({
+                    'groupname': grpname,
+                    'leader': loggedinuser!.uid,
+                    'ttime': DateTime.now(),
+                    'members': [],
+                    'amount': [],
+                    //            'messageTime': DateTime.now(),
+                  });
+
+                  getuserlist(loggedinuser!.email.toString());
+                }
                 //     updateuserdata('donnn', "uKZbyPaSVd819mb17IFP");
               }
             }),
@@ -175,7 +206,11 @@ class grpstream extends StatelessWidget {
             if (hh == loggedinmail) c = 1;
             if (c == 1) {
               // grps.add(hh);
-              grps.insert(0, hh);
+              if (grps.length != 0) {
+                grps.insert(0, hh);
+              } else {
+                grps.add(hh);
+              }
             }
 
             //grps.reversed;
@@ -188,6 +223,65 @@ class grpstream extends StatelessWidget {
           );
         });
   }
+}
+
+Future removeleader(String iid) async {
+  return await grouplist.doc(iid).update({'leader': ''});
+}
+
+Future removegroup(String iid) async {
+  final gval =
+      await FirebaseFirestore.instance.collection('group').doc(iid).get();
+  String lead = gval.get('leader');
+  if (lead == loggedinuser!.uid.toString()) {
+    await removeleader(iid);
+  }
+  List mem = gval.get('members');
+  mem.remove(loggedinuser!.email.toString());
+
+  return await grouplist.doc(iid).update({'members': mem});
+}
+
+Future removeamount(String iid) async {
+  final gval =
+      await FirebaseFirestore.instance.collection('group').doc(iid).get();
+  List bb = gval.get('amount');
+  List aa = [];
+  //List bb = itemlist[i]['amount'];
+  // for (int i = 0; i < bb.length; i++) print(bb[i]);
+  for (int j = 0; j < bb.length; j++) {
+    //List mm = [];
+    String p = bb[j];
+    String maily = '';
+    String opponent = '';
+    int c = 0;
+    int h;
+    int k;
+    for (k = 0; k < p.length; k++) {
+      if (p[k] == ' ') {
+        c = 1;
+        k++;
+        // h=k+1;
+        break;
+      }
+      if (c == 0) {
+        maily += p[k];
+      }
+    }
+    for (h = k; h < p.length; h++) {
+      if (p[h] == ' ') {
+        break;
+      }
+      opponent += p[h];
+    }
+    //       print(maily + d);
+    if (maily == loggedinuser!.email.toString() ||
+        opponent == loggedinuser!.email.toString()) {
+      aa.add(p);
+    }
+  }
+  for (int i = 0; i < aa.length; i++) bb.remove(aa[i]);
+  return await grouplist.doc(iid).update({'amount': bb});
 }
 
 class grpbubble extends StatelessWidget {
@@ -228,6 +322,52 @@ class grpbubble extends StatelessWidget {
                     a,
                     style: TextStyle(color: Colors.white),
                   ),
+                ),
+              ),
+              Container(
+                color: Colors.tealAccent.shade100,
+                child: TextButton(
+                  onPressed: () {
+                    showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return Scaffold(
+                          backgroundColor: Colors.transparent,
+                          body: SafeArea(
+                            child: Expanded(
+                              flex: 1,
+                              child: Center(
+                                child: Column(
+                                  children: [
+                                    Expanded(flex: 1, child: Container()),
+                                    Expanded(
+                                      flex: 2,
+                                      child: Column(
+                                        children: [
+                                          buttonn('Are you sure', () async {
+                                            //func(a);
+                                            await removegroup(iid);
+                                            await removeamount(iid);
+                                            Navigator.pop(context);
+                                          }),
+                                          SizedBox(height: 5),
+                                          buttonn('No', () {
+                                            // func1(a);
+                                            Navigator.pop(context);
+                                          }),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                        );
+                      },
+                    );
+                  },
+                  child: Text('Leave Group'),
                 ),
               ),
             ],

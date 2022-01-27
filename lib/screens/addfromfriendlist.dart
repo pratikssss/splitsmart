@@ -51,23 +51,28 @@ class _addfromfriendlistState extends State<addfromfriendlist> {
     try {
       //print(ab);
       // print('klkllklklklklklk');
-
+      final gval =
+          await FirebaseFirestore.instance.collection('group').doc(gid).get();
+      List mem = gval.get('members');
+      List money = gval.get('amount');
+      Map mp = new Map();
+      for (int i = 0; i < mem.length; i++) {
+        mp[mem[i]] = 1;
+      }
       for (int i = 0; i < ab.length; i++) {
         String d = ab[i];
-        print(d);
-        final gval =
-            await FirebaseFirestore.instance.collection('group').doc(gid).get();
-        List mem = gval.get('members');
-        List money = gval.get('amount');
-        for (int j = 0; j < mem.length; j++) {
-          String pq = mem[j] + ' ' + d + ' ' + '0';
-          String qp = d + ' ' + mem[j] + ' ' + '0';
-          money.add(pq);
-          money.add(qp);
+        // print(d);
+        if (!mp.containsKey(d)) {
+          for (int j = 0; j < mem.length; j++) {
+            String pq = mem[j] + ' ' + d + ' ' + '0';
+            String qp = d + ' ' + mem[j] + ' ' + '0';
+            money.add(pq);
+            money.add(qp);
+          }
+          a2(gid, money);
+          mem.add(d);
+          a1(gid, mem);
         }
-        a2(gid, money);
-        mem.add(d);
-        a1(gid, mem);
       }
     } catch (e) {
       print(e);
@@ -151,7 +156,11 @@ class namestream1 extends StatelessWidget {
               final pp = i.get('friends');
               for (int j = 0; j < pp.length; j++) {
                 final hh = namebubble(pp[j]);
-                names.insert(0, hh);
+                if (names.length != 0) {
+                  names.insert(0, hh);
+                } else {
+                  names.add(hh);
+                }
                 // names.add(hh);
               }
               //grps.reversed;

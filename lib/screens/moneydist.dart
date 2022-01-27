@@ -212,7 +212,11 @@ class namestream1 extends StatelessWidget {
               for (int j = 0; j < pp.length; j++) {
                 final hh = namebubble(pp[j]);
                 // names.add(hh);
-                names.insert(0, hh);
+                if (names.length != 0) {
+                  names.insert(0, hh);
+                } else {
+                  names.add(hh);
+                }
               }
               //grps.reversed;
             }

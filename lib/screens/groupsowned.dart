@@ -8,15 +8,19 @@ import 'package:splitsmart/screens/addfromfriendlist.dart';
 
 final _firestore = FirebaseFirestore.instance;
 User? loggedinuser;
+String uremail = 'bcd';
 
 class groupsowned extends StatefulWidget {
-  const groupsowned({Key? key}) : super(key: key);
   static const String id = 'gown';
+  String mail;
+  groupsowned(this.mail);
   @override
-  _groupsownedState createState() => _groupsownedState();
+  _groupsownedState createState() => _groupsownedState(this.mail);
 }
 
 class _groupsownedState extends State<groupsowned> {
+  _groupsownedState(this.mail);
+  String mail;
   final _auth = FirebaseAuth.instance;
   final CollectionReference grouplist =
       FirebaseFirestore.instance.collection('group');
@@ -30,7 +34,10 @@ class _groupsownedState extends State<groupsowned> {
   void getcurrentuser() async {
     try {
       final user = await _auth.currentUser;
-      if (user != null) loggedinuser = user;
+      if (user != null) {
+        loggedinuser = user;
+        //  uremail = loggedinuser!.email.toString();
+      }
     } catch (e) {
       print(e);
     }
@@ -45,6 +52,26 @@ class _groupsownedState extends State<groupsowned> {
       body: SafeArea(
           child: Column(
         children: [
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                'Your email',
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 30),
+              ),
+            ],
+          ),
+          SizedBox(height: 10),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                mail,
+                style: TextStyle(fontWeight: FontWeight.w500, fontSize: 20),
+              ),
+            ],
+          ),
+          SizedBox(height: 10),
           const Text(
             'Groups owned by you and their ids',
             style: TextStyle(fontWeight: FontWeight.bold, fontSize: 30),
@@ -87,8 +114,11 @@ class namestream1 extends StatelessWidget {
               final gn = i.get('groupname');
               final hh = namebubble(gn, abc);
               // names.add(hh);
-              names.insert(0, hh);
-
+              if (names.length != 0) {
+                names.insert(0, hh);
+              } else {
+                names.add(hh);
+              }
               //grps.reversed;
             }
           }

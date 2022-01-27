@@ -36,6 +36,7 @@ class _signinpageState extends State<signinpage> {
               Hero(
                 tag: 'logo',
                 child: Container(
+                  height: 100,
                   child: Image(
                     image: AssetImage('android/images/money.jpg'),
                   ),
