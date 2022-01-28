@@ -98,7 +98,7 @@ class _accountscreenState extends State<accountscreen> {
                     height: 50.0,
                     margin: EdgeInsets.all(10),
                     child: buttonn('Logout', () {
-                      Navigator.pushNamed(context, loginpage.id);
+                      Navigator.popUntil(context, (route) => route.isFirst);
                     }),
                   ),
                 ],
